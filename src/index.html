@@ -8,7 +8,41 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 </head>
 <body>
-
+    <header><h1>Package Delivery System</h1></header>
     <div id="mapid" style="width: 80vw; height: 600px;"></div>
+    <table id="tableid">
+        <thead>
+            <tr>
+                <th>Package ID</th>
+                <th>Delivery Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>ZipCode</th>
+                <th>Delivery Deadline</th>
+                <th>Package Weight (KILO)</th>
+                <th>Special Notes</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+    <div>
+        <label for="total-packages-per-truck">Total Packages Allowed Per Truck:    </label>
+        <input type="number" id="total-packages-per-truck" name="total_packages_allowed" value="16" min="0">
+    </div>
+    <p>Total Number of Trucks: 2</p>
+    <div>
+        <label for="truck-speed">Default Truck's Speed (MPH):    </label>
+        <input type="number" id="truck-speed" name="truck-speed" value="18" min="0" max="80">
+    </div>
+    <div>
+        <label for="truck1-start-time">Truck1 Start At:    </label>
+        <input type="time" id="truck1-start-time" name="truck1-start-time" value="08:00" min="08:00" max="17:00">
+    </div>
+    <div>
+        <label for="truck2-start-time">Truck2 Start At:    </label>
+        <input type="time" id="truck2-start-time" name="truck2-start-time" value="09:05" min="08:00" max="17:00">
+    </div>
+    <button id="calculate">Calculate</button>
+    <footer></footer>
 </body>
 </html>

@@ -47,15 +47,15 @@ class HashTable:
     # Inserts the specified key/value pair. If the key already exists, the 
     # corresponding value is updated. If inserted or updated, True is returned. 
     # If not inserted, then False is returned.
-    def insert(self, key,delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,delivery_status,delivery_time, delivery_state):
+    def insert(self, key,delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,delivery_status,delivery_time, delivery_state, special_notes=''):
         if self.data[key] == None:
             if self.data[key] != [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],delivery_state]:
-                self.data[key] = [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],self.get_coordinates(delivery_address,delivery_zipcode),delivery_state]
+                self.data[key] = [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],self.get_coordinates(delivery_address,delivery_zipcode),delivery_state,special_notes]
                 return True
             else:
                 return False
         else:
-            self.data[key] = [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],self.get_coordinates(delivery_address,delivery_zipcode),delivery_state]
+            self.data[key] = [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],self.get_coordinates(delivery_address,delivery_zipcode),delivery_state,special_notes]
       
             
     # Searches for the specified key. If found, the key/value pair is removed 
@@ -101,7 +101,7 @@ headers = csvreader.__next__()
 for row in csvreader:
     package_id = int(row[0])
     address = row[1]
-    package_hash_table.insert(package_id,address,row[5],row[2],row[4],row[6],delivery_status[0],'',row[3])
+    package_hash_table.insert(package_id,address,row[5],row[2],row[4],row[6],delivery_status[0],'',row[3],row[7])
     # Track package ids with different delivery deadline
     if row[5] not in delivery_deadline_dict:
         delivery_deadline_dict[row[5]] = [package_id]
@@ -190,9 +190,10 @@ def get_min_distance(current_location, location_list):
             next_location = location
     return (next_location, min_distance)
 
+truck_speed = 18
+
 # A function to return the time of arriving current location from previous location
-def current_time(previous_time, min_distance):
-    speed = 18
+def current_time(previous_time, min_distance, speed=truck_speed):
     previous_hours = time_sort(previous_time)[0]
     previous_minutes = time_sort(previous_time)[1]
     duriation_hour = min_distance // speed
