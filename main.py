@@ -3,13 +3,20 @@
 import csv
 import queue
 import requests
+import json
 
 #A. . HASH TABLE
 class HashTable:
     def __init__(self,total_num_packages):
         self.total_num_packages = total_num_packages
-        self.data = [None] * (self.total_num_packages + 1)
-
+        try:
+            with open('data','r') as file:
+                self.data = json.load(file)
+                print('fetched the data list from the data file')
+        except:
+            self.data = [None] * (self.total_num_packages + 1)
+            print('created data list')
+        
 
     def get_coordinates(self, address,zipcode):
         url = 'https://nominatim.openstreetmap.org/search'
@@ -31,7 +38,6 @@ class HashTable:
         try:
             response = requests.get(url, params=params, headers=headers)
             response.raise_for_status()  # Raise an error for bad status codes
-            
             if response.text.strip():  # Check if response is not empty
                 data = response.json()
                 if data:
@@ -47,15 +53,18 @@ class HashTable:
     # Inserts the specified key/value pair. If the key already exists, the 
     # corresponding value is updated. If inserted or updated, True is returned. 
     # If not inserted, then False is returned.
-    def insert(self, key,delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,delivery_status,delivery_time, delivery_state, special_notes=''):
+    def insert(self, key, delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,delivery_status,delivery_time, delivery_state, special_notes=''):
         if self.data[key] == None:
-            if self.data[key] != [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],delivery_state]:
-                self.data[key] = [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],self.get_coordinates(delivery_address,delivery_zipcode),delivery_state,special_notes]
-                return True
-            else:
-                return False
-        else:
             self.data[key] = [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],self.get_coordinates(delivery_address,delivery_zipcode),delivery_state,special_notes]
+            return True
+        else:
+            address = self.data[key][0]
+            zipcode = self.data[key][3]
+            coordinates = self.data[key][6] 
+            if address == delivery_address and zipcode == delivery_zipcode:
+                self.data[key] = [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],coordinates,delivery_state,special_notes]
+            else:
+                self.data[key] = [delivery_address, delivery_deadline,delivery_city,delivery_zipcode, package_weight,[delivery_status,delivery_time],self.get_coordinates(delivery_address,delivery_zipcode),delivery_state,special_notes]
       
             
     # Searches for the specified key. If found, the key/value pair is removed 
@@ -77,15 +86,19 @@ class HashTable:
             #print('This package is not in the database')
             return None
     def __str__(self):
-        for item in self.data:
-            print(item)
-        return ''
+        # for item in self.data:
+        #     print(item)
+        # return ''
+        return str(self.data)
+    def get_data(self):
+        return self.data
     def get_key(self):
         key = []
         for item in self.data:
             if item != None:
                 key.append(self.data.index(item))
         return key
+
 
         
 package_hash_table = HashTable(40)
@@ -110,7 +123,11 @@ for row in csvreader:
     if address not in distance:
         distance.append(address)
 
-print(package_hash_table)
+# print(package_hash_table)
+
+with open('data', 'w') as file:
+    json.dump(package_hash_table.get_data(), file)
+
 
 # Customize the sorted funtion for sorting by time
 def time_sort(time):
