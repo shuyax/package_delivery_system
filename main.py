@@ -232,8 +232,11 @@ truck2_queue = queue.Queue()
 milage = 0
 truck1_current_location = 'HUB'
 truck2_current_location = 'HUB'
-truck1_previous_time = '8:00 AM'
-truck2_previous_time = '9:05 AM'
+
+truck1_start_time = '08:00 AM'
+truck2_start_time = '09:05 AM'
+truck1_previous_time = truck1_start_time
+truck2_previous_time = truck2_start_time
 truck1_loading_time = [time_sort(truck1_previous_time)]
 truck2_loading_time = [time_sort(truck2_previous_time)]
 

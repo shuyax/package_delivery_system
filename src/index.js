@@ -20,9 +20,8 @@ function addMarkerOnMap([latitude, longitude],address, city, state, zipcode) {
         .openPopup();
 }
 
-const table = document.getElementById('tbody')
-
 function displayPackagesInTable(packages) {
+    const table = document.getElementById('tbody')
     let i = 0
     for (let eachPackage of packages){
         if (eachPackage != null) {
@@ -72,6 +71,39 @@ fetch('http://192.168.1.163:5000/package-delivery-system/api/data')
     .then(data => displayPackagesInTable(data))
     .catch(error => console.error('Error: ', error))
 
+fetch('http://192.168.1.163:5000/package-delivery-system/api/get-settings')
+    .then(response => response.json())
+    .then(data => {
+      console.log('Current Settings:', data);
+      // Display data in the front-end, e.g., in input fields
+      document.getElementById('total-packages-per-truck').value = data.total_packages_per_truck;
+      document.getElementById('truck-speed').value = data.truck_speed;
+      document.getElementById('truck1-start-time').value = data.truck1_start_time;
+      document.getElementById('truck2-start-time').value = data.truck2_start_time;
+    });
 
 
+function updateTruckSettings() {
+    const updatedData = {
+        "total_packages_per_truck": document.getElementById('total-packages-per-truck').value,
+        "truck_speed": document.getElementById('truck-speed').value,
+        "truck1_start_time": document.getElementById('truck1-start-time').value,
+        "truck2_start_time": document.getElementById('truck2-start-time').value
+    }
 
+    const urlEncodedData = new URLSearchParams(updatedData).toString();
+
+    fetch('http://192.168.1.163:5000/package-delivery-system/api/update-settings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: urlEncodedData
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Updated Settings:', data);
+            // Optionally, update the UI with the new settings
+        })
+}
+document.getElementById('calculate').addEventListener('click',updateTruckSettings)
